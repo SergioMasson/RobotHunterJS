@@ -15,14 +15,14 @@ export class PlayerControllerSettings
 
 export class PlayerController
 {
-    mPlayer : BABYLON.AbstractMesh;
+    mPlayer : BABYLON.TransformNode;
     mPilars: BABYLON.Mesh[];
     mWorldBB: BABYLON.BoundingBox;
     mSettings: PlayerControllerSettings;
     mLastPosition: BABYLON.Vector3;
     mLastRotation: BABYLON.Vector3;
 
-    constructor(player: BABYLON.AbstractMesh, settings : PlayerControllerSettings ,pilars: BABYLON.Mesh[], world: BABYLON.BoundingBox)
+    constructor(player: BABYLON.TransformNode, settings : PlayerControllerSettings ,pilars: BABYLON.Mesh[], world: BABYLON.BoundingBox)
     {
         this.mPlayer = player;
         this.mSettings = settings;
@@ -46,9 +46,9 @@ export class PlayerController
         var rotationSpeed = 0;
 
         if (InputManager.IsPressed("a")) 
-            rotationSpeed = this.mSettings.rotationSpeed * deltaTime;
-        else if (InputManager.IsPressed("d")) 
             rotationSpeed = -this.mSettings.rotationSpeed * deltaTime;
+        else if (InputManager.IsPressed("d")) 
+            rotationSpeed = this.mSettings.rotationSpeed * deltaTime;
 
         this.mPlayer.rotate(BABYLON.Vector3.Up(), rotationSpeed);
 

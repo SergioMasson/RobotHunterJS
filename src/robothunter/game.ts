@@ -6,6 +6,7 @@ import { InputManager } from "./inputManager";
 import { Enemy, IEnemyEventReceiver } from "./enemy";
 import {PlayerController, PlayerControllerSettings} from "./playerController"
 import {GameGUI} from  "./GUI"
+import { RobotAnimationManager } from "./robotAnimationManager";
 
 const PLAYER_SPEED = 10;
 const PLAYER_ROTATION_SEED = 7;
@@ -27,6 +28,9 @@ export class RobotHunterGame implements IEnemyEventReceiver
     mTotalTime: number;
     mPlayerController: PlayerController;
     mPlayerControllerSettings : PlayerControllerSettings;
+    mAnimationManager : RobotAnimationManager;
+    mPlayerRoot : BABYLON.TransformNode;
+    mCameraTarget :  BABYLON.AbstractMesh;
 
     constructor(scene: BABYLON.Scene, htmlCanvas: HTMLCanvasElement) 
     {
@@ -35,6 +39,9 @@ export class RobotHunterGame implements IEnemyEventReceiver
         this.mScore = ENEMY_COUNT;
         this.mTotalTime = 0;
         this.mPlayerControllerSettings = new PlayerControllerSettings(PLAYER_SPEED, PLAYER_ROTATION_SEED);
+        this.mPlayerRoot = new BABYLON.TransformNode("playerRoot", scene);
+        this.mCameraTarget = BABYLON.Mesh.CreateSphere("", 10, 0.1, scene);
+        this.mCameraTarget.parent = this.mPlayerRoot;
     }
 
     buildStage(material : BABYLON.StandardMaterial): void 
@@ -127,6 +134,8 @@ export class RobotHunterGame implements IEnemyEventReceiver
         this.mRobotMesh.actionManager = new BABYLON.ActionManager(this.mScene);
         this.mRobotLight.parent = this.mRobotMesh;
 
+
+
         var robotMaterial = new BABYLON.StandardMaterial("robotMaterial", this.mScene);
         robotMaterial.maxSimultaneousLights = ENEMY_COUNT;
         robotMaterial.diffuseTexture = new BABYLON.Texture("./textures/character_basecolor.png", this.mScene, undefined, undefined, undefined, undefined,
@@ -165,12 +174,15 @@ export class RobotHunterGame implements IEnemyEventReceiver
         ground.material = groundMaterial;
         ground.receiveShadows = true;
 
-        this.mCamera.setTarget(this.mRobotMesh)
+        this.mCamera.setTarget(this.mCameraTarget);
+        this.mRobotMesh.parent = this.mPlayerRoot;
 
         this.buildStage(groundMaterial);
         this.buildEnemies();
 
-        this.mPlayerController = new PlayerController(this.mRobotMesh, this.mPlayerControllerSettings, this.mPilar, ground.getBoundingInfo().boundingBox);
+        this.mPlayerController = new PlayerController(this.mPlayerRoot, this.mPlayerControllerSettings, this.mPilar, ground.getBoundingInfo().boundingBox);
+        this.mAnimationManager = new RobotAnimationManager(this.mRobotMesh, 0.1);
+        this.mAnimationManager.Play();
 
         GameGUI.initialize(this.mScene);
         console.log("Finished game startup");
