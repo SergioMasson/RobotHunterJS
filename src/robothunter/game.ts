@@ -182,7 +182,16 @@ export class RobotHunterGame implements IEnemyEventReceiver
 
         this.mPlayerController = new PlayerController(this.mPlayerRoot, this.mPlayerControllerSettings, this.mPilar, ground.getBoundingInfo().boundingBox);
         this.mAnimationManager = new RobotAnimationManager(this.mRobotMesh, 0.1);
-        this.mAnimationManager.Play();
+        
+        this.mPlayerController.OnMoveStart = () =>
+        {
+            this.mAnimationManager.Play();
+        };
+
+        this.mPlayerController.OnMoveStop= () => 
+        {
+            this.mAnimationManager.Stop();
+        };
 
         GameGUI.initialize(this.mScene);
         console.log("Finished game startup");

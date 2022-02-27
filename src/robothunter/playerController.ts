@@ -21,6 +21,9 @@ export class PlayerController
     mSettings: PlayerControllerSettings;
     mLastPosition: BABYLON.Vector3;
     mLastRotation: BABYLON.Vector3;
+    mIsMooving : boolean;
+    public OnMoveStop: () => void;
+    public OnMoveStart: () => void;
 
     constructor(player: BABYLON.TransformNode, settings : PlayerControllerSettings ,pilars: BABYLON.Mesh[], world: BABYLON.BoundingBox)
     {
@@ -30,16 +33,39 @@ export class PlayerController
         this.mPilars = pilars;
         this.mLastPosition = new BABYLON.Vector3(0, 0, 0);
         this.mLastRotation = new BABYLON.Vector3(0, 0, 0);
+        this.mIsMooving = false;
     }
 
     update(deltaTime : number) : void
     {
         var fowardVec: BABYLON.Vector3 = new BABYLON.Vector3(0, 0, 0);
 
-        if (InputManager.IsPressed("w")) 
+        if (InputManager.IsPressed("w"))
+        {
+            if(!this.mIsMooving){
+                this.OnMoveStart();
+            }
+
+            this.mIsMooving = true;
             fowardVec = new BABYLON.Vector3(0, 0, 1 * this.mSettings.movementSpeed * deltaTime);
-        else if (InputManager.IsPressed("s")) 
+        }
+        else if (InputManager.IsPressed("s"))
+        {
+            if(!this.mIsMooving){
+                this.OnMoveStart();
+            }
+
+            this.mIsMooving = true;
             fowardVec = new BABYLON.Vector3(0, 0, -1 * this.mSettings.movementSpeed * deltaTime);
+        }
+        else
+        {
+            if(this.mIsMooving){
+                this.OnMoveStop();
+            }
+
+            this.mIsMooving = false;
+        }
 
         this.mPlayer.locallyTranslate(fowardVec);
 

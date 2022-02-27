@@ -15,8 +15,9 @@ export class RobotAnimationManager {
 
   private CreateWalkAnimation(): void {
     const frameRate = 30;
+    const animDuration = 0.3 * frameRate;
 
-    const maxJumRotation = BABYLON.PHI / 3;
+    const maxJumRotation = BABYLON.PHI / 9;
 
     var jumpRotation = new BABYLON.Animation(
       "jumbRotatin",
@@ -34,18 +35,23 @@ export class RobotAnimationManager {
     });
 
     jumpRotationKeys.push({
-      frame: 0.1 * frameRate,
+      frame: 0.25 * animDuration,
       value:  new BABYLON.Vector3(-maxJumRotation/2, 0, 0)
     });
 
     jumpRotationKeys.push({
-      frame: 0.2 * frameRate,
+      frame: 0.5 * animDuration,
       value: new BABYLON.Vector3(-maxJumRotation, 0, 0)
     });
 
     jumpRotationKeys.push({
-      frame: 0.3 * frameRate,
+      frame: 0.75 * animDuration,
       value: new BABYLON.Vector3(-maxJumRotation/2, 0, 0)
+    });
+
+    jumpRotationKeys.push({
+      frame: 1 * animDuration,
+      value: new BABYLON.Vector3(0, 0, 0)
     });
 
     jumpRotation.setKeys(jumpRotationKeys);
@@ -66,19 +72,25 @@ export class RobotAnimationManager {
     });
 
     jumpYKeys.push({
-      frame: 0.2 * frameRate,
+      frame: 0.25 * animDuration,
       value: 0.25
     });
 
     jumpYKeys.push({
-      frame: 0.3 * frameRate,
+      frame: 0.5 * animDuration,
       value: 0.5
     });
 
     jumpYKeys.push({
-      frame: 0.4 * frameRate,
+      frame: 0.75 * animDuration,
       value: 0.25
     });
+
+    jumpYKeys.push({
+      frame: 1 * animDuration,
+      value: 0
+    });
+
 
     jumpY.setKeys(jumpYKeys);
 
@@ -86,7 +98,14 @@ export class RobotAnimationManager {
     this.mAnimationGroup.addTargetedAnimation(jumpRotation, this.mPlayerMesh);
   }
 
-  Play(): void {
+  Play(): void 
+  {
     this.mAnimationGroup.play(true);
+  }
+
+  Stop() : void {
+    this.mAnimationGroup.stop();
+    this.mPlayerMesh.rotation = new BABYLON.Vector3(0, 0, 0);
+    this.mPlayerMesh.position = new BABYLON.Vector3(0, 0, 0);
   }
 }
